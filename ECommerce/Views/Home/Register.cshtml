@@ -1,0 +1,217 @@
+﻿<style>
+    body {
+        background: #f7f8fa;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .register-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 450px;
+        background: #ffffff;
+        padding: 40px 35px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        transition: 0.3s ease;
+    }
+
+        .register-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .brand-logo {
+        font-size: 28px;
+        font-weight: bold;
+        color: #0c831f;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .register-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+
+    .register-subtitle {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .form-control {
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid #e5e5e5;
+        padding: 10px 15px;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    textarea.form-control {
+        height: 80px;
+        resize: none;
+    }
+
+    .form-control:focus {
+        border-color: #0c831f;
+        box-shadow: 0 0 0 3px rgba(12,131,31,0.15);
+    }
+
+    label {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .btn-blinkit {
+        height: 48px;
+        border-radius: 12px;
+        font-weight: 600;
+        background: #0c831f;
+        border: none;
+        color: white;
+        transition: 0.3s;
+        font-size: 15px;
+    }
+
+        .btn-blinkit:hover {
+            background: #096b19;
+            transform: scale(1.02);
+        }
+
+    .login-link {
+        font-size: 16px;
+        text-align: center;
+        margin-top: 15px;
+        color: #555;
+    }
+
+        .login-link a {
+            color: #0c831f;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .login-link a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+<div class="register-wrapper">
+    <div class="register-card">
+
+        <div class="register-title">Create your account</div>
+        <div class="register-subtitle">Join us and start shopping instantly</div>
+
+        <form id="registerForm">
+
+            <div class="mb-3">
+                <label>Name</label>
+                <input type="text" name="name" id="Name"
+                       placeholder="Enter Name"
+                       class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" name="email" id="Email"
+                       placeholder="Enter Email"
+                       class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input type="password" name="password" id="Password"
+                       placeholder="Enter Password"
+                       class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label>Mobile Number</label>
+                <input type="number" name="mobile" id="Mobile"
+                       placeholder="Enter Mobile Number"
+                       class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label>Address</label>
+                <textarea name="address" id="Address"
+                          class="form-control" required></textarea>
+            </div>
+
+            <button class="btn btn-blinkit w-100" id="Register" type="submit">
+                Register
+            </button>
+
+            <div class="login-link">
+                Already have an account?
+                <a href="/Home/Login">Login</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#registerForm").submit(function (e) {
+            e.preventDefault();
+
+            var userData = {
+                Name: $("#Name").val(),
+                Email: $("#Email").val(),
+                Password: $("#Password").val(),
+                Mobile: $("#Mobile").val(),
+                Address: $("#Address").val()
+            };
+
+            $.ajax({
+                url: '/api/APIHome/Signup',
+                type: 'POST',
+                data: JSON.stringify(userData),
+                contentType: 'application/json; charset=utf-8',
+
+                success: function (response) {
+
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response ? response : 'Registration successful!',
+                        icon: 'success',
+                        confirmButtonText: 'Go to Login'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/Home/Login';
+                        }
+                    });
+
+                    $("#registerForm")[0].reset();
+                },
+
+                error: function (xhr) {
+
+                    Swal.fire({
+                        title: 'Error!',
+                        text: xhr.responseText ? xhr.responseText : 'Something went wrong!',
+                        icon: 'error'
+                    });
+
+                }
+            });
+
+        });
+
+    });
+</script>

@@ -1,0 +1,131 @@
+﻿@{
+    Layout = "_Layout1";
+}
+<div class="row mb-4">
+    <h1 class="text-center text-danger">Welcome To Admin Dashboard</h1>
+</div>
+<!-- Statistic Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mt-2">
+        <a href="/admin/managecategory" id="totalcategory">
+
+        </a>
+    </div>
+    <div class="col-md-3 mt-2">
+        <a href="/admin/manageproduct" id="totalproducts">
+
+        </a>
+    </div>
+    <div class="col-md-3 mt-2">
+        <a href="/admin/manageuser" id="totalusers">
+
+        </a>
+    </div>
+    <div class="col-md-3 mt-2">
+        <div class="stat-card bg-red">
+            <h3>6</h3>
+            <p>Total Orders</p>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function(){
+       GetCount(); 
+    });
+        function GetCount(){
+        $.ajax({
+            url:'/api/APIAdmin/GetAllCategory',
+            type:'GET',
+            success:function(result){
+                if(result != null){
+
+                    var count = result.length;   // ✅ yaha count milega
+
+                    $("#totalcategory").append(`<div class="stat-card bg-blue"><h3>${count}</h3><p>Total Categories</p></div>`);  // show in HTML
+                    CountNum();
+                }
+            }
+        })
+        $.ajax({
+            url:'/api/APIAdmin/GetAllProduct',
+            type:'GET',
+            success:function(result){
+                if(result != null){
+
+                    var count = result.length;   // ✅ yaha count milega
+
+                    $("#totalproducts").append(`<div class="stat-card bg-green"><h3>${count}</h3><p>Total Products</p></div>`);  // show in HTML
+                    CountNum();
+                }
+            }
+        })
+        $.ajax({
+            url:'/api/APIAdmin/GetAllUser',
+            type:'GET',
+            success:function(result){
+                if(result != null){
+                    console.log(result);
+                    var count = result.length;   // ✅ yaha count milega
+                    $("#totalusers").append(`<div class="stat-card bg-yellow text-dark"><h3>${count}</h3><p>Total Registrations</p></div>`);  // show in HTML
+                    GetUserTable();
+                }
+            }
+        })
+    }
+    function CountNum(){
+        $('.stat-card').each(function(){
+            var value = parseInt($(this).find('h3').text());
+            var count = 0;
+            var interval = setInterval(() => {
+                if(count < value){
+                    count++;
+                    $(this).find('h3').text(count);
+                } else {
+                    clearInterval(interval);
+                }
+            }, 100);
+        });
+    }
+    function GetUserTable(){
+        $('#userTable').DataTable({
+
+        ajax: {
+            url: '/api/APIAdmin/GetAllUser',
+            type: 'GET',
+            dataSrc: ''
+        },
+
+        columns: [
+            { data: 'id' },
+            { data: 'name' },
+            { data: 'email' },
+
+            // ⚠ Password dikhana secure nahi hota
+            { data: 'password' },
+
+            { data: 'mobile' },
+            { data: 'address' },
+            {
+                data: 'id',
+                render: function (data) {
+                    return `
+                        <button class="btn btn-outline-warning btn-sm" onclick="Edit(${data})">Edit</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="Delete(${data})">Delete</button>
+                    `;
+                }
+            }
+        ],
+
+        pageLength: 5,
+        lengthMenu: [5, 10, 25, 50],
+        ordering: true,
+        searching: true,
+        responsive: true,
+        autoWidth: false
+    });
+    }
+</script>

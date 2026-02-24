@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "_Layout1";
+}
+<div class="row">
+    <h2 class="text-center text-danger">Manage All Clients</h2>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-lg-12 col-md-12 table-responsive mt-5 p-2 shadow-lg rounded-3">
+        <!-- Table Section -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table id="userTable" class="table table-bordered table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Mobile</th>
+                            <th>Address</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function(){
+       GetUserTable();
+    });
+    function GetUserTable(){
+        $('#userTable').DataTable({
+
+        ajax: {
+            url: '/api/APIAdmin/GetAllUser',
+            type: 'GET',
+            dataSrc: ''
+        },
+
+        columns: [
+            { data: 'id' },
+            { data: 'name' },
+            { data: 'email' },
+
+            // ⚠ Password dikhana secure nahi hota
+            { data: 'password' },
+
+            { data: 'mobile' },
+            { data: 'address' },
+            {
+                data: 'id',
+                render: function (data) {
+                    return `
+                        <button class="btn btn-outline-warning btn-sm" onclick="Edit(${data})">Edit</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="Delete(${data})">Delete</button>
+                    `;
+                }
+            }
+        ],
+
+        pageLength: 5,
+        lengthMenu: [5, 10, 25, 50],
+        ordering: true,
+        searching: true,
+        responsive: true,
+        autoWidth: false
+    });
+    }
+</script>

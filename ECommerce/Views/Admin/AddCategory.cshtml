@@ -1,0 +1,199 @@
+﻿@{
+    Layout = "_Layout1";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg,#fff5f5,#ffeaea);
+    }
+
+    /* Header */
+    .page-header {
+        background: linear-gradient(90deg,#8b0000,#e52d27);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(229,45,39,0.3);
+    }
+
+    /* Glass Card */
+    .glass-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        transition: 0.3s;
+    }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+        }
+
+    /* Floating Input */
+    .form-floating input {
+        border-radius: 12px;
+        border: 1px solid #f1b0b7;
+    }
+
+        .form-floating input:focus {
+            border-color: #c82333;
+            box-shadow: 0 0 0 0.2rem rgba(200,35,51,0.25);
+        }
+
+    /* Upload Box */
+    .upload-box {
+        border: 2px dashed #f1b0b7;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .upload-box:hover {
+            border-color: #c82333;
+            background: #fff0f0;
+        }
+
+        .upload-box i {
+            font-size: 40px;
+            color: #c82333;
+        }
+
+    .preview-img {
+        max-height: 180px;
+        margin-top: 15px;
+        display: none;
+        border-radius: 12px;
+    }
+
+    /* Red Gradient Button */
+    .btn-red {
+        background: linear-gradient(90deg,#8b0000,#e52d27);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .btn-red:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(229,45,39,0.4);
+        }
+</style>
+
+<!-- Header -->
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h4 class="mb-1"><i class="fa fa-folder-plus me-2"></i>Add Category</h4>
+        <small>Dashboard / Categories / Add</small>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+
+        <div class="glass-card">
+
+            <form id="AddCat" enctype="multipart/form-data">
+
+                <!-- Category Name -->
+                <div class="form-floating mb-4">
+                    <input type="text"
+                           class="form-control"
+                           id="c_name"
+                           placeholder="Category Name"
+                           required>
+                    <label>Category Name</label>
+                </div>
+
+                <!-- Upload Box -->
+                <div class="upload-box"
+                     onclick="document.getElementById('c_pic').click()">
+
+                    <i class="fa fa-cloud-upload-alt"></i>
+                    <p class="mt-2 mb-0">Click to Upload Category Image</p>
+
+                    <input type="file"
+                           id="c_pic"
+                           hidden
+                           accept="image/*"
+                           required>
+
+                    <img id="previewImage" class="preview-img" />
+                </div>
+
+                <button type="submit"
+                        class="btn btn-red w-100 mt-4">
+                    🚀 Save Category
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function () {
+
+        // Image Preview
+        $("#c_pic").change(function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $("#previewImage")
+                        .attr("src", e.target.result)
+                        .fadeIn();
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Form Submit
+        $("#AddCat").submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData();
+            formData.append("C_Name", $("#c_name").val());
+            formData.append("C_Pic", $("#c_pic")[0].files[0]);
+
+            $.ajax({
+                url: '/api/APIAdmin/AddCategory',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Category Added Successfully!',
+                        icon: 'success',
+                        confirmButtonColor: '#c82333'
+                    });
+
+                    $("#AddCat")[0].reset();
+                    $("#previewImage").hide();
+                },
+                error: function () {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong!',
+                        icon: 'error'
+                    });
+                }
+            });
+
+        });
+
+    });
+</script>

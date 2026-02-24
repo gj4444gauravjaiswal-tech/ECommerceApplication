@@ -1,0 +1,188 @@
+﻿<style>
+    body {
+        background: #f7f8fa;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        background: #ffffff;
+        padding: 40px 35px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        transition: 0.3s ease;
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .login-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #000;
+    }
+
+    .login-subtitle {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .form-control {
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid #e5e5e5;
+        padding: 10px 15px;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #0c831f;
+        box-shadow: 0 0 0 3px rgba(12,131,31,0.15);
+    }
+
+    .btn-blinkit {
+        height: 48px;
+        border-radius: 12px;
+        font-weight: 600;
+        background: #0c831f;
+        border: none;
+        color: white;
+        transition: 0.3s;
+        font-size: 15px;
+    }
+
+    .btn-blinkit:hover {
+        background: #096b19;
+        transform: scale(1.02);
+    }
+
+    .extra-text {
+        font-size: 13px;
+        text-align: center;
+        margin-top: 15px;
+        color: #777;
+    }
+
+    .brand-logo {
+        font-size: 28px;
+        font-weight: bold;
+        color: #0c831f;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <div class="login-title">Login to your account</div>
+        <div class="login-subtitle">Enter your details to continue</div>
+
+        <form id="LoginForm">
+
+            <div class="mb-3">
+                <input type="email" name="email" id="email"
+                       placeholder="Enter Email"
+                       class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <input type="password" name="password" id="password"
+                       placeholder="Enter Password"
+                       class="form-control" required />
+            </div>
+
+            <button class="btn btn-blinkit w-100" type="submit">
+                Login
+            </button><br /><br />
+            <button class="btn btn-blinkit w-100" type="button" onclick="location.href='/home/register'">
+                Register
+            </button>
+
+            <div class="extra-text">
+                By continuing, you agree to our Terms & Conditions
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#LoginForm").submit(function (e) {
+            e.preventDefault();
+
+            var loginData = {
+                Email: $("#email").val(),
+                Password: $("#password").val()
+            };
+
+            $.ajax({
+                url: '/api/APIHome/Signin',
+                type: 'POST',
+                data: JSON.stringify(loginData),
+                contentType: 'application/json; charset=utf-8',
+
+                success: function (res) {
+
+                    if (res != null) {
+
+                        Swal.fire({
+                            title: 'Login Successful!',
+                            text: 'Welcome ' + res.email,
+                            icon: 'success',
+                            confirmButtonText: 'Continue'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                if (res.role === "Admin") {
+                                    window.location.href = '/Admin/Dashboard';
+                                }
+                                else if (res.role === "User") {
+                                    window.location.href = '/User/Dashboard';
+                                }
+                                else {
+                                    window.location.href = '/Home/Index';
+                                }
+                            }
+                        });
+
+                    } else {
+
+                        Swal.fire({
+                            title: 'Invalid Credentials!',
+                            text: 'Email or Password is incorrect.',
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function (xhr) {
+
+                    Swal.fire({
+                        title: 'Login Failed!',
+                        text: xhr.responseText,
+                        icon: 'error'
+                    });
+
+                }
+            });
+
+        });
+
+    });
+</script>
