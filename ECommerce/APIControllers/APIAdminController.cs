@@ -79,5 +79,40 @@ namespace ECommerce.APIControllers
             var result = _aservices.GetAllUser();
             return Ok(result);
         }
+        [HttpGet("GetUserById/{id}")]
+        public IActionResult GetUserById(int id)
+        {
+            var user = _aservices.GetUserById(id);
+            return Ok(user);
+        }
+        [HttpPut("UpdateUser")]
+        public IActionResult UpdateUser([FromBody] SignupModel user)
+        {
+            var existingUser = _aservices.GetUserById(user.Id);
+            if (existingUser == null)
+                return NotFound("User not found");
+            _aservices.UpdateUser(user);
+            return Ok("User Updated");
+        }
+        [HttpDelete("DeleteUser/{id}")]
+        public IActionResult DeleteUser(int id)
+        {
+            var existingUser = _aservices.GetUserById(id);
+            if (existingUser == null)
+                return NotFound("User not found");
+            _aservices.DeleteUser(id);
+            return Ok("User Deleted");
+        }
+        [HttpGet("DashboardCounts")]
+        public IActionResult DashboardCounts()
+        {
+            var data = new
+            {
+                users = _aservices.GetAllUser().Count(),
+                categories = _aservices.GetAllCategory().Count(),
+                products = _aservices.GetAllProduct().Count()
+            };
+            return Ok(data);
+        }
     }
 }

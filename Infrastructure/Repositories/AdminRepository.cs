@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
         }
         public void AddCategory(CategoryModel catmod)
         {
-            if(catmod == null)
+            if (catmod == null)
             {
                 throw new NotImplementedException();
             }
@@ -39,11 +39,11 @@ namespace Infrastructure.Repositories
         }
         public List<CategoryModel> GetAllCategory()
         {
-            using(SqlConnection con = new SqlConnection(_cs))
+            using (SqlConnection con = new SqlConnection(_cs))
             {
                 SqlCommand cmd = new SqlCommand("sp_Category", con);
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@action",2);
+                cmd.Parameters.AddWithValue("@action", 2);
                 con.Open();
                 List<CategoryModel> list = new List<CategoryModel>();
                 SqlDataReader sdr = cmd.ExecuteReader();
@@ -83,14 +83,14 @@ namespace Infrastructure.Repositories
         }
         public List<ProductModel> GetAllProduct()
         {
-            using(SqlConnection con = new SqlConnection(_cs))
+            using (SqlConnection con = new SqlConnection(_cs))
             {
-                SqlCommand cmd = new SqlCommand("sp_Product",con);
+                SqlCommand cmd = new SqlCommand("sp_Product", con);
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@action",2);
+                cmd.Parameters.AddWithValue("@action", 2);
                 con.Open();
                 SqlDataReader sdr = cmd.ExecuteReader();
-                List <ProductModel> list = new List<ProductModel>();
+                List<ProductModel> list = new List<ProductModel>();
                 while (sdr.Read())
                 {
                     ProductModel pmod = new ProductModel()
@@ -132,6 +132,64 @@ namespace Infrastructure.Repositories
                     list.Add(usermod);
                 }
                 return list;
+            }
+        }
+        public SignupModel GetUserById(int id)
+        {
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                SqlCommand cmd = new SqlCommand("sp_User", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@u_id", id);
+                cmd.Parameters.AddWithValue("@action", 6);
+                con.Open();
+                SqlDataReader sdr = cmd.ExecuteReader();
+                if (sdr.Read())
+                {
+                    return new SignupModel()
+                    {
+                        Id = (int)sdr["u_id"],
+                        Name = (string)sdr["u_name"],
+                        Email = (string)sdr["u_email"],
+                        Mobile = (long)sdr["u_mobile"],
+                        Address = (string)sdr["u_address"],
+                    };
+                }
+                return null;
+            }
+        }
+        public void UpdateUser(SignupModel user)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_User", con))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@u_id", user.Id);
+                    cmd.Parameters.AddWithValue("@u_name", user.Name);
+                    cmd.Parameters.AddWithValue("@u_email", user.Email);
+                    cmd.Parameters.AddWithValue("@u_mobile", user.Mobile);
+                    cmd.Parameters.AddWithValue("@u_address", user.Address);
+                    cmd.Parameters.AddWithValue("@action", 3);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteUser(int id)
+        {
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_User", con))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@u_id", id);
+                    cmd.Parameters.AddWithValue("@action", 4);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
     }

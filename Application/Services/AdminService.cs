@@ -40,5 +40,17 @@ namespace Application.Services
         {
             return _arepo.GetAllUser();
         }
+        public SignupModel GetUserById(int id)
+        {
+            return _arepo.GetUserById(id);
+        }
+        public void UpdateUser(SignupModel user)
+        {
+            _arepo.UpdateUser(user);
+        }
+        public void DeleteUser(int id)
+        {
+            _arepo.DeleteUser(id);
+        }
     }
 }

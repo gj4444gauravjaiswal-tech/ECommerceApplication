@@ -1,0 +1,197 @@
+﻿@{
+    Layout = "_Layout1";
+}
+<div class="row mb-4">
+    <h2 class="text-center text-danger">Edit Client</h2>
+</div>
+<div class="row">
+    <style>
+        body {
+            background: #f7f8fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .register-wrapper {
+            min-height: 50vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 450px;
+            background: #ffffff;
+            padding: 40px 35px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            transition: 0.3s ease;
+        }
+
+            .register-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .register-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .register-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-control {
+            height: 48px;
+            border-radius: 12px;
+            border: 1px solid #e5e5e5;
+            padding: 10px 15px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        textarea.form-control {
+            height: 80px;
+            resize: none;
+        }
+
+        .form-control:focus {
+            border-color: #96060a;
+            box-shadow: 0 0 0 3px rgba(12,131,31,0.15);
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .btn-blinkit {
+            height: 48px;
+            border-radius: 12px;
+            font-weight: 600;
+            background: #96060a;
+            border: none;
+            color: white;
+            transition: 0.3s;
+            font-size: 15px;
+        }
+
+            .btn-blinkit:hover {
+                background: #96060a;
+                transform: scale(1.02);
+            }
+
+        .login-link {
+            font-size: 16px;
+            text-align: center;
+            margin-top: 15px;
+            color: #555;
+        }
+
+            .login-link a {
+                color: #96060a;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .login-link a:hover {
+                    text-decoration: underline;
+                }
+    </style>
+
+    <div class="register-wrapper">
+        <div class="register-card">
+            <form id="editUserForm">
+                <input type="hidden" id="userId" name="userId" />
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required />
+                </div>
+                <div class="mb-3">
+                    <label for="mobile" class="form-label">Mobile</label>
+                    <input type="text" class="form-control" id="mobile" name="mobile" required />
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea class="form-control" id="address" name="address" required></textarea>
+                </div>
+                <button type="submit" class="btn-blinkit w-100">Update User</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id'); 
+        
+        console.log("fs",userId)// get ?id= from URL
+
+        if (userId) {
+            GetUserData(userId);
+        }
+
+        $("#editUserForm").submit(function (e) {
+            e.preventDefault();
+            UpdateUserData();
+        });
+    });
+
+    function GetUserData(id) {
+
+        $.ajax({
+            url: `/api/APIAdmin/GetUserById/${id}`,   // ✅ Correct API
+            type: 'GET',
+            success: function (user) {
+                if (user != null) {
+
+                    $("#userId").val(user.id);
+                    $("#name").val(user.name);
+                    $("#email").val(user.email);
+                    $("#mobile").val(user.mobile);
+                    $("#address").val(user.address);
+                }
+            },
+            error: function () {
+               Swal.fire('Error!','Unable to fetch data from Server','Error')
+            }
+        });
+    }
+
+    function UpdateUserData() {
+        var userData = {
+            Id: $("#userId").val(),
+            Name: $("#name").val(),
+            Email: $("#email").val(),
+            Mobile: $("#mobile").val(),
+            Address: $("#address").val()
+        };
+            $.ajax({
+        url: '/api/APIAdmin/UpdateUser',
+        type: 'PUT',
+        data: JSON.stringify(userData),
+        contentType: 'application/json; charset=utf-8',
+        success: function () {
+            Swal.fire('Success!','Data Updated Successfully','success').then(() => {
+                window.location.href = '/Admin/ManageUser';
+            });
+        },
+        error: function (xhr) {
+            Swal.fire('Error!','Server Error Updation Failed!','error');
+        }
+    });
+    }
+</script>

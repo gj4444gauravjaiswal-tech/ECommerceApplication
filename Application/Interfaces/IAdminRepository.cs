@@ -14,5 +14,8 @@ namespace Application.Interfaces
         void AddProduct(ProductModel pmod);
         List<ProductModel> GetAllProduct();
         List<SignupModel> GetAllUser();
+        SignupModel GetUserById(int id);
+         void UpdateUser(SignupModel user);
+         void DeleteUser(int id);
     }
 }

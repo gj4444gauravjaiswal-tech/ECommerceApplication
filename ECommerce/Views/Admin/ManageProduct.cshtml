@@ -2,3 +2,56 @@
     Layout = "_Layout1";
 }
 <h2 class="text-center text-danger">Manage Products</h2>
+<div class="row" id="productsec">
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function(){
+        $.ajax({
+            url:'/api/APIAdmin/GetAllProduct',
+            type:'GET',
+            success: function(products){
+                console.log(products)
+                if(products != null){
+                    var Product = "";
+                    $.each(products,function(i,pro){
+                        Product += `
+    <div class="col-sm-2 p-3">
+        <div class="card p-2 shadow-sm rounded-3" style="height:320px">
+            <img src="/images/${pro.p_Pic}" height="140px" width="100%" class="rounded-top-2" />
+            <div class="card-body">
+                <div class="row mb-3">
+                    <small style="font-size:16px;font-weight:bold;" class="text-center mt-2">${pro.p_Name}</small>
+                    <small style="font-size:14px;" class="text-center mt-1">${pro.p_Desc}</small>
+                    <small style="font-size:14px;font-weight:bold;" class="text-center mt-1">MRP : <b class="badge bg-warning text-dark" style="font-size:13px">${pro.p_Price}</b></small>
+                </div>
+                <div class="row">
+                   <div class="col-12">
+                    <div class="row">
+                    <div class="col-6">
+                    <center>
+                        <a href="/Admin/EditProduct?p_id=${pro.p_Id}" class="nav-link badge bg-warning px-4 py-2 text-dark"><i class="fa-solid fa-pencil"></i></a>
+                    </center>
+                    </div>
+                    <div class="col-6">
+                    <center>
+                        <a href="/Admin/DeleteProduct?p_id=${pro.p_Id}" class="nav-link badge bg-danger px-4 py-2 text-light"><i class="fa-solid fa-trash"></i></a>
+                    </center>
+                    </div>
+                    </div>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                        `;
+                    })
+                }
+                $("#productsec").html(Product);
+            },
+            error:function(){
+                Swal.fire('Error!','Server Error!','error');
+            }
+        })
+    })
+</script>

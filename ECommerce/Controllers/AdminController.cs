@@ -32,6 +32,14 @@ namespace ECommerce.Controllers
         {
             return View();
         }
+        public IActionResult EditUser()
+        {
+            return View();
+        }
+        public IActionResult DeleteUser()
+        {
+            return View();
+        }
         public IActionResult Setting()
         {
             return View();

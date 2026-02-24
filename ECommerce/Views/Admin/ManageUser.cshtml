@@ -5,25 +5,21 @@
     <h2 class="text-center text-danger">Manage All Clients</h2>
 </div>
 <div class="row">
-    <div class="col-sm-12 col-lg-12 col-md-12 table-responsive mt-5 p-2 shadow-lg rounded-3">
+    <div class="col-sm-12 col-lg-12 col-md-12 table-responsive mt-5 p-5 shadow-lg rounded-3">
         <!-- Table Section -->
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <table id="userTable" class="table table-bordered table-striped">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Password</th>
-                            <th>Mobile</th>
-                            <th>Address</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
+        <table id="userTable" class="table table-bordered table-striped rounded-3">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Mobile</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+        </table>
     </div>
 </div>
 <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -33,42 +29,74 @@
     $(document).ready(function(){
        GetUserTable();
     });
+    var table;
     function GetUserTable(){
-        $('#userTable').DataTable({
-
+    table = $('#userTable').DataTable({
         ajax: {
             url: '/api/APIAdmin/GetAllUser',
             type: 'GET',
             dataSrc: ''
         },
+           columns: [
+    { data: 'id' },
+    { data: 'name' },
+    { data: 'email' },
+    { data: 'password' },
+    { data: 'mobile' },
+    { data: 'address' },
+    {
+        data: 'id',
+        render: function (data) {
+            return `
+                <button class="btn btn-outline-warning btn-sm" onclick="Edit(${data})">Edit</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="Delete(${data})">Delete</button>
+            `;
+        }
+    }
+],
 
-        columns: [
-            { data: 'id' },
-            { data: 'name' },
-            { data: 'email' },
-
-            // ⚠ Password dikhana secure nahi hota
-            { data: 'password' },
-
-            { data: 'mobile' },
-            { data: 'address' },
-            {
-                data: 'id',
-                render: function (data) {
-                    return `
-                        <button class="btn btn-outline-warning btn-sm" onclick="Edit(${data})">Edit</button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="Delete(${data})">Delete</button>
-                    `;
-                }
-            }
-        ],
-
-        pageLength: 5,
-        lengthMenu: [5, 10, 25, 50],
-        ordering: true,
-        searching: true,
-        responsive: true,
-        autoWidth: false
+pageLength: 5,
+lengthMenu: [5, 10, 25, 50],
+ordering: true,
+searching: true,
+responsive: true,
+autoWidth: false
     });
+}
+    function Edit(id){
+        $.ajax({
+            url: `/api/APIAdmin/GetUserById/${id}`,
+            type: 'GET',
+            success: function(result){
+                if(result != null){
+                    // Redirect to edit page with user data
+                    window.location.href = `/Admin/EditUser?id=${id}`;
+                }
+                else{
+                    Swal.fire('Error','Failed to Fetch User Data','Error');
+                }
+            },
+            error: function(){
+                Swal.fire('Error','An error occurred while fetching user data','Error');
+            }
+        })
+    }
+    function Delete(id){
+        $.ajax({
+            url: `/api/APIAdmin/DeleteUser/${id}`,
+            type: 'DELETE',
+            success: function(result){
+                if(result != null){
+                    table.ajax.reload(null, false); 
+                    Swal.fire('Success','User Deleted Successfully','success');
+                }
+                else{
+                    Swal.fire('Error','Failed to Delete User','error');
+                }
+            },
+            error: function(){
+                Swal.fire('Error','An error occurred while deleting the user','error');
+            }
+        })
     }
 </script>

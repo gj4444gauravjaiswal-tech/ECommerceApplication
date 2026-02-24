@@ -2,3 +2,55 @@
     Layout = "_Layout1";
 }
 <h2 class="text-center text-danger">Manage Category</h2>
+<div class="row" id="categorysec">
+    
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function(){
+        $.ajax({
+            url:'/api/APIAdmin/GetAllCategory',
+            type:'GET',
+            success: function(result){
+                console.log(result)
+                if(result != null){
+                    var cat = "";
+                    $.each(result,function(i,res){
+                        cat += `
+    <div class="col-sm-2 p-3">
+        <div class="card p-2 shadow-sm rounded-3" style="height:220px">
+            <img src="/images/${res.c_Pic}" height="100px" width="100%" class="rounded-top-2" />
+            <div class="card-body">
+                <div class="row mb-3">
+                    <small style="font-size:14px;font-weight:bold;" class="text-center mt-2">${res.c_Name}</small>
+                </div>
+                <div class="row">
+                   <div class="col-12">
+                        <div class="row">                           
+                    <div class="col-6">
+                    <center>
+                        <a href="/Admin/AddCategorybarChart?c_id=${res.c_ID}" class="nav-link badge bg-warning px-4 py-2 text-dark"><i class="fa-solid fa-pencil"></i></a>
+                    </center>
+                    </div>                                       
+                    <div class="col-6">
+                    <center>
+                        <a href="/Admin/DeleteCategory?c_id=${res.c_ID}" class="nav-link badge bg-danger px-4 py-2 text-light"><i class="fa-solid fa-trash"></i></a>
+                    </center>
+                    </div>                  
+                    </div>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                        `;
+                    })
+                }
+                $("#categorysec").html(cat);
+            },
+            error:function(){
+                Swal.fire('Error!','Server Error!','error');
+            }
+        })
+    })
+</script>
