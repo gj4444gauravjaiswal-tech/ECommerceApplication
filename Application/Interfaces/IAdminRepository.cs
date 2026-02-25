@@ -17,5 +17,11 @@ namespace Application.Interfaces
         SignupModel GetUserById(int id);
          void UpdateUser(SignupModel user);
          void DeleteUser(int id);
+        CategoryModel GetCatById(int id);
+        void UpdateCategory(CategoryModel catmod);
+        void DeleteCategory(int id);
+        ProductModel GetProductById(int id);
+        void UpdateProduct(ProductModel product);
+        void DeleteProduct(int id);
     }
 }

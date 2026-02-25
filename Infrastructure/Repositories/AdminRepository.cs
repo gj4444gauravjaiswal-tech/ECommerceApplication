@@ -192,5 +192,119 @@ namespace Infrastructure.Repositories
                 }
             }
         }
+        public CategoryModel GetCatById(int id)
+        {
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                SqlCommand cmd = new SqlCommand("sp_Category", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@c_id", id);
+                cmd.Parameters.AddWithValue("@action", 5);
+                con.Open();
+                SqlDataReader sdr = cmd.ExecuteReader();
+                if (sdr.Read())
+                {
+                    return new CategoryModel()
+                    {
+                        C_ID = (int)sdr["c_id"],
+                        C_Name = (string)sdr["c_name"],
+                        C_Pic = (string)sdr["c_pic"]
+                    };
+                }
+                return null;
+            }
+        }
+        public void UpdateCategory(CategoryModel catmod)
+        {
+            if (catmod == null)
+                throw new ArgumentNullException(nameof(catmod));
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_Category", con))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@c_id", catmod.C_ID);
+                    cmd.Parameters.AddWithValue("@c_name", catmod.C_Name);
+                    cmd.Parameters.AddWithValue("@c_pic", catmod.C_Pic);
+                    cmd.Parameters.AddWithValue("@action", 6);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteCategory(int id)
+        {
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_Category", con))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@c_id", id);
+                    cmd.Parameters.AddWithValue("@action", 3);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public ProductModel GetProductById(int id)
+        {
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                SqlCommand cmd = new SqlCommand("sp_Product", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@p_id", id);
+                cmd.Parameters.AddWithValue("@action", 5);
+                con.Open();
+                SqlDataReader sdr = cmd.ExecuteReader();
+                if (sdr.Read())
+                {
+                    return new ProductModel()
+                    {
+                        P_Id = (int)sdr["p_id"],
+                        P_Name = (string)sdr["p_name"],
+                        P_Cat = (int)sdr["cat_id"],
+                        P_Desc = (string)sdr["p_desc"],
+                        P_Price = (int)sdr["p_price"],
+                        P_Pic = (string)sdr["p_image"],
+                    };
+                }
+                return null;
+            }
+        }
+        public void UpdateProduct(ProductModel product)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_Product", con))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@p_id", product.P_Id);
+                    cmd.Parameters.AddWithValue("@p_name", product.P_Name);
+                    cmd.Parameters.AddWithValue("@cat_id", product.P_Cat);
+                    cmd.Parameters.AddWithValue("@p_desc", product.P_Desc);
+                    cmd.Parameters.AddWithValue("@p_price", product.P_Price);
+                    cmd.Parameters.AddWithValue("@p_image", product.P_Pic);
+                    cmd.Parameters.AddWithValue("@action", 6);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteProduct(int id)
+        {
+            using (SqlConnection con = new SqlConnection(_cs))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_Product", con))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@p_id", id);
+                    cmd.Parameters.AddWithValue("@action", 4);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

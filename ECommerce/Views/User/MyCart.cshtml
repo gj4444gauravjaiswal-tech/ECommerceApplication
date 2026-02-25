@@ -1,6 +1,145 @@
 ﻿@{
     Layout = "_Layout2";
 }
-<div class="row">
-    <h2 class="text-center text-success">My Carts</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <h3 class="mb-4">🛒 My Cart</h3>
+            <div class="container mt-4" id="cartItems">
+                <!-- Cart Items Here -->
+            </div>
+            <div class="card p-3 mt-3 shadow-sm">
+                <h5>Grand Total: ₹ <span id="grandTotal">0</span></h5>
+                <button id ="checkoutBtn" class="btn btn-success w-100 mx-auto mt-2">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
 </div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+<script>
+    $(document).ready(function () {
+        LoadCart();
+    });
+        function LoadCart() {
+
+        $.ajax({
+            url: `/api/APIUser/GetCartItems`,
+            type: "GET",
+            success: function (data) {
+
+                console.log(data); // debugging
+
+                if (data.length > 0) {
+
+                    var cartHtml = "";
+                    var total = 0;
+
+                    $.each(data, function (i, item) {
+
+                        total += item.p_Price * item.quantity;
+
+                            cartHtml += `
+    <div class="row" >
+    <div class="col-md-12 mb-3">
+        <div class="card p-3 shadow-sm">
+            <div class="row align-items-center">
+
+                <div class="col-md-2">
+                    <img src="/images/${item.p_Pic}" width="80">
+                </div>
+
+                <div class="col-md-3">
+                    <h6>${item.p_Name}</h6>
+                    <p>₹${item.p_Price}</p>
+                </div>
+
+                <div class="col-md-3 text-center">
+
+                    <button class="btn btn-outline-danger btn-sm minusQty"
+                            data-id="${item.p_Id}">
+                        -
+                    </button>
+
+                    <span class="mx-2 fw-bold">${item.quantity}</span>
+
+                    <button class="btn btn-outline-success btn-sm plusQty"
+                            data-id="${item.p_Id}">
+                        +
+                    </button>
+
+                </div>
+
+                <div class="col-md-2">
+                    ₹ ${item.p_Price * item.quantity}
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+    `;
+                    });
+
+                    $("#cartItems").html(cartHtml);
+                    $("#grandTotal").text(total);
+                }
+                else {
+                    $("#cartItems").html("<h5>Your cart is empty</h5>");
+                }
+            }
+        });
+    }
+
+    // Delete Cart Item
+    $(document).on("click", ".deleteCart", function () {
+
+        var cartId = $(this).data("id");
+
+        $.ajax({
+            url: `/api/APIUser/DeleteCart/${cartId}`,
+            type: "DELETE",
+            success: function () {
+                LoadCart(); // reload cart
+            }
+        });
+
+    });
+        // Increase
+    $(document).on("click", ".plusQty", function () {
+
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: `/api/APIUser/IncreaseQty/${id}`,
+            type: "PUT",
+            success: function () {
+                LoadCart();
+            }
+        });
+    });
+
+    // Decrease
+    $(document).on("click", ".minusQty", function () {
+
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: `/api/APIUser/DecreaseQty/${id}`,
+            type: "PUT",
+            success: function () {
+                LoadCart();
+            }
+        });
+    });
+
+        $(document).on("click", "#checkoutBtn", function () {
+
+        Swal.fire({
+            title: 'Order Placed Successfully!',
+            icon: 'success'
+        });
+
+    });
+
+</script>

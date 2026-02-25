@@ -4,14 +4,14 @@
 
 <!-- Banner Section -->
 <div class="row mb-4">
-    <div class="col-md-4">
+    <div class="col-md-4 mb-2">
         <div class="p-4 bg-success text-white rounded-3">
             <h4>Fresh Fruits</h4>
             <p>Get fresh fruits delivered in 15 minutes</p>
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-4 mb-2">
         <div class="p-4 bg-warning text-dark rounded-3">
             <h4>Snacks & Drinks</h4>
             <p>All your favorite snacks available</p>
@@ -45,6 +45,18 @@
         ShowAllCategory();
         ShowAllProducts();
     })
+    $(document).on("click", ".addCart", function () {
+
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: `/api/APIUser/AddToCart/${id}`,
+            type: "POST",
+            success: function () {
+                alert("Added to cart");
+            }
+        });
+    });
     function ShowAllCategory(){
         $.ajax({
             url:'/api/APIUser/GetAllCategory',
@@ -54,10 +66,12 @@
                     var catdata = "";
                     $.each(Category,function(i,cat){
                         catdata += `<div class="col-md-2">
+                                        <a class="nav-link text-dark" href='/User/AllProducts?c_id=${cat.c_ID}'>
                                         <div class="category-card shadow-sm">
                                         <img src="/images/${cat.c_Pic}" height="100px" width="100%"/>
                                         <p class="fw-bold">${cat.c_Name}</p>
                                         </div>
+                                        </a>
                                     </div>`
                     })
                     $("#productcategory").html(catdata);
@@ -78,15 +92,18 @@
                 if(Products != null){
                     var Prods = "";
                     $.each(Products,function(i,proitem){
-                        Prods += `<div class="col-md-3 mb-4 product-item" data-name="${proitem.p_Name}">
-                                    <div class="card product-card p-3">
+                        Prods += `<div class="col-md-3 mb-4 product-item" data-name="${proitem.p_Name}">                                  
+                                        <div class="card product-card p-3">
                                         <img src="/images/${proitem.p_Pic}" class="card-img-top" height="160px">
                                         <div class="card-body">
                                             <h6>${proitem.p_Name}</h6>
+                                            <small>${proitem.p_Desc}</small>
                                             <p>₹${proitem.p_Price}</p>
-                                            <button class="btn btn-success w-100">Add to Cart</button>
+                                                <button class="btn btn-success w-100 addCart" data-id="${proitem.p_Id}">
+                                                    ADD To Cart
+                                                </button>
                                         </div>
-                                    </div>
+                                        </div>                                   
                                 </div>`
                     })
                     $("#popularproducts").html(Prods);

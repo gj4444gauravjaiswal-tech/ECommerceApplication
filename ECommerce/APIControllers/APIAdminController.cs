@@ -114,5 +114,93 @@ namespace ECommerce.APIControllers
             };
             return Ok(data);
         }
+        [HttpGet("GetCatById/{id}")]
+        public IActionResult GetCatById(int id)
+        {
+            var result = _aservices.GetCatById(id);
+            return Ok(result);
+        }
+        [HttpPut("UpdateCategory")]
+        public IActionResult UpdateCategory([FromForm] CategoryModel catmod, [FromForm] IFormFile C_Pic, [FromForm] string old_pic)
+        {
+            var existingCat = _aservices.GetCatById(catmod.C_ID);
+
+            if (existingCat == null)
+                return NotFound();
+
+            existingCat.C_Name = catmod.C_Name;
+
+            if (C_Pic != null)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(C_Pic.FileName);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    C_Pic.CopyTo(stream);
+                }
+
+                existingCat.C_Pic = fileName;
+            }
+            else
+            {
+                existingCat.C_Pic = old_pic;
+            }
+
+            _aservices.UpdateCategory(existingCat);
+
+            return Ok();
+        }
+        [HttpDelete("DeleteCategory/{id}")]
+        public IActionResult DeleteCategory(int id)
+        {
+            var existingCat = _aservices.GetCatById(id);
+            if (existingCat == null)
+                return NotFound("Category not found");
+            _aservices.DeleteCategory(id);
+            return Ok("Category Deleted");
+        }
+        [HttpGet("GetProductById/{id}")]
+        public IActionResult GetProductById(int id)
+        {
+            var result = _aservices.GetProductById(id);
+            return Ok(result);
+        }
+        [HttpPut("UpdateProduct")]
+        public IActionResult UpdateProduct([FromForm] ProductModel product, [FromForm] IFormFile P_Pic, [FromForm] string old_pic)
+        {
+            var existingProduct = _aservices.GetProductById(product.P_Id);
+            if (existingProduct == null)
+                return NotFound("Product not found");
+            existingProduct.P_Name = product.P_Name;
+            existingProduct.P_Desc = product.P_Desc;
+            existingProduct.P_Price = product.P_Price;
+            existingProduct.P_Cat = product.P_Cat;
+            if (P_Pic != null)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(P_Pic.FileName);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    P_Pic.CopyTo(stream);
+                }
+                existingProduct.P_Pic = fileName;
+            }
+            else
+            {
+                existingProduct.P_Pic = old_pic;
+            }
+            _aservices.UpdateProduct(existingProduct);
+            return Ok("Product Updated");
+        }
+        [HttpDelete("DeleteProduct/{id}")]
+        public IActionResult DeleteProduct(int id)
+        {
+            var existingProduct = _aservices.GetProductById(id);
+            if (existingProduct == null)
+                return NotFound("Product not found");
+            _aservices.DeleteProduct(id);
+            return Ok("Success");
+        }
     }
 }

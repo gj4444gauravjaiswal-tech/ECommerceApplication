@@ -5,9 +5,49 @@
 <div class="row" id="categorysec">
     
 </div>
+<!--Update Category Form-->
+<!-- Modal -->
+<div class="modal" id="myModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+
+            <!-- Modal Header with Red Gradient -->
+            <div class="modal-header" style="background: linear-gradient(45deg, #8b0000,#e52d27); color: white;">
+                <h5 class="modal-title">Update Category</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="ModifyCat" method="post" enctype="multipart/form-data">
+            <!-- Modal Body -->
+            <div class="modal-body p-5" style="background-color: #fff5f5;">
+                <label class="fw-bold mb-2">Category ID</label>
+                <input type="number" name="c_id" id="c_id" class="form-control shadow-sm mb-2" readonly/>
+                    <label class="fw-bold mb-2">Category Name</label>
+                <input type="text" name="c_name" id="c_name" class="form-control shadow-sm mb-2" required placeholder="Enter Category Name"/>
+                    <label class="fw-bold mb-2">Category Image</label>
+                    <br /><img class="mb-2" id="c_picture" height="40" width="80"/>
+                <input type="file" name="c_pic" id="c_pic" class="form-control shadow-sm mb-3" required/>
+                <input type="text" id="old_pic" name="old_pic" hidden class="form-control shadow-sm" />
+            </div>
+
+            <!-- Modal Footer with Red Gradient -->
+            <div class="modal-footer" style="background: linear-gradient(45deg, #8b0000,#e52d27);">
+                <button type="button" class="btn btn-secondary" style="background-color:#8b0000" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" style="background-color: #e52d27; border-color: #ff4e50;">Save changes</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Button to Trigger Modal -->
+
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
     $(document).ready(function(){
+        LoadAllCategories();
+        UpdateCategory();
+    })
+    function LoadAllCategories(){
         $.ajax({
             url:'/api/APIAdmin/GetAllCategory',
             type:'GET',
@@ -26,17 +66,21 @@
                 </div>
                 <div class="row">
                    <div class="col-12">
-                        <div class="row">                           
+                        <div class="row">
                     <div class="col-6">
                     <center>
-                        <a href="/Admin/AddCategorybarChart?c_id=${res.c_ID}" class="nav-link badge bg-warning px-4 py-2 text-dark"><i class="fa-solid fa-pencil"></i></a>
+                        <a class="btn btn-danger" data-bs-toggle="modal" onclick="event.stopPropagation(); EditCategory(${res.c_ID})" data-bs-target="#myModal">
+                            <i class="fa-solid fa-pencil text-light"></i>
+                        </a>
                     </center>
-                    </div>                                       
+                    </div>
                     <div class="col-6">
                     <center>
-                        <a href="/Admin/DeleteCategory?c_id=${res.c_ID}" class="nav-link badge bg-danger px-4 py-2 text-light"><i class="fa-solid fa-trash"></i></a>
+                        <a class="btn btn-danger" onclick="DeleteCategory(${res.c_ID})">
+                            <i class="fa-solid fa-trash text-light"></i>
+                        </a>
                     </center>
-                    </div>                  
+                    </div>
                     </div>
                    </div>
                 </div>
@@ -52,5 +96,87 @@
                 Swal.fire('Error!','Server Error!','error');
             }
         })
-    })
+    }
+    function DeleteCategory(c_id){
+        var id = c_id;
+        if(id != 0){
+            $.ajax({
+                url:`/api/APIAdmin/DeleteCategory/${id}`,
+                type:'DELETE',
+                success: function(result){
+                    if(result != null){
+                        Swal.fire('Success','Category Deleted Successfully','success').then(()=>{
+                            location.reload();
+                        });
+                    }
+                    else{
+                        Swal.fire('Error!','Unable to delete category','error');
+                    }
+                },
+                error: function(err){
+                    if(err != null){
+                        Swal.fire('Error!','Server Error!','error');
+                    }
+                }
+            })
+        }
+    }
+    function EditCategory(id){
+        if(id != 0){
+            $.ajax({
+                url:`/api/APIAdmin/GetCatById/${id}`,
+                type:'GET',
+                success: function(result){
+                    if(result != null){
+                        $("#c_id").val(result.c_ID);
+                        $("#c_name").val(result.c_Name);
+
+                        $("#old_pic").val(result.c_Pic);
+                        $("#c_picture").attr("src", "/images/" + result.c_Pic);
+
+                        $("#c_pic").val(""); // clear file input
+                    }
+                    else{
+                        Swal.fire('Error!','Unable to fetch data','error');
+                    }
+                }
+            })
+        }
+    }
+    function UpdateCategory(){
+        $("#ModifyCat").submit(function(e){
+            e.preventDefault();
+
+            var formData = new FormData();
+
+            formData.append("C_ID", $("#c_id").val());
+            formData.append("C_Name", $("#c_name").val());
+            formData.append("old_pic", $("#old_pic").val());
+
+            var file = $("#c_pic")[0].files[0];
+            if(file){
+                formData.append("C_Pic", file);
+            }
+
+            $.ajax({
+                url:'/api/APIAdmin/UpdateCategory',
+                type:'PUT',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(res){
+                    if(res != null){
+                        Swal.fire('Success','Category updated successfully','success')
+                    .then(()=>{
+                        $("#myModal").modal("hide");
+                        LoadAllCategories();
+                    });
+                    }
+                },
+                error: function(){
+                    Swal.fire('Error!','Server Error!','error');
+                }
+            });
+        });
+    }
 </script>

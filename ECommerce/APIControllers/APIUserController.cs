@@ -25,5 +25,48 @@ namespace ECommerce.APIControllers
             var Products = _uservices.GetAllProducts();
             return Ok(Products);    
         }
+        [HttpGet("GetProductByCat/{id}")]
+        public IActionResult GetProductByCat(int id)
+        {
+            var products = _uservices.GetProductByCat(id);
+            return Ok(products);
+        }
+        [HttpPost("AddToCart/{p_id}")]
+        public IActionResult AddToCart(int p_id)
+        {
+            int userId = 1; // temporary (later session se lena)
+            _uservices.AddToCart(userId, p_id);
+            return Ok();
+        }
+
+        [HttpGet("GetCartItems")]
+        public IActionResult GetCartItems()
+        {
+            int userId = 1;
+            return Ok(_uservices.GetCartItems(userId));
+        }
+
+        [HttpPut("IncreaseQty/{p_id}")]
+        public IActionResult IncreaseQty(int p_id)
+        {
+            int userId = 1;
+            _uservices.IncreaseQty(userId, p_id);
+            return Ok();
+        }
+
+        [HttpPut("DecreaseQty/{p_id}")]
+        public IActionResult DecreaseQty(int p_id)
+        {
+            int userId = 1;
+            _uservices.DecreaseQty(userId, p_id);
+            return Ok();
+        }
+
+        [HttpGet("GetCartCount")]
+        public IActionResult GetCartCount()
+        {
+            int userId = 1;
+            return Ok(_uservices.GetCartCount(userId));
+        }
     }
 }

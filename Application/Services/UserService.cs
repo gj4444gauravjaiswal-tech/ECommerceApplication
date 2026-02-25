@@ -15,6 +15,17 @@ namespace Application.Services
         {
             _urepo = urepo;
         }
+
+        public void AddToCart(int userId, int productId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DecreaseQty(int userId, int productId)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<CategoryModel> GetAllCategory()
         {
             return _urepo.GetAllCategory();
@@ -24,7 +35,22 @@ namespace Application.Services
             return _urepo.GetAllProducts();
         }
 
-        public SignupModel GetUserById()
+        public int GetCartCount(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<CartModel> GetCartItems(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ProductModel> GetProductByCat(int id)
+        {
+            return _urepo.GetProductByCat(id);
+        }
+
+        public void IncreaseQty(int userId, int productId)
         {
             throw new NotImplementedException();
         }

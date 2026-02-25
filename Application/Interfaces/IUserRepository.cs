@@ -11,5 +11,11 @@ namespace Application.Interfaces
     {
         List<CategoryModel> GetAllCategory();
         List<ProductModel> GetAllProducts();
+        List<ProductModel> GetProductByCat(int id);
+        void AddToCart(int userId, int productId);
+        List<CartModel> GetCartItems(int userId);
+        void IncreaseQty(int userId, int productId);
+        void DecreaseQty(int userId, int productId);
+        int GetCartCount(int userId);
     }
 }

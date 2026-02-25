@@ -17,11 +17,11 @@ namespace Application.Services
         }
         public void AddCategory(CategoryModel catmod)
         {
-            if(catmod == null)
+            if (catmod == null)
             {
                 throw new NotImplementedException();
             }
-             _arepo.AddCategory(catmod);
+            _arepo.AddCategory(catmod);
         }
         public List<CategoryModel> GetAllCategory()
         {
@@ -51,6 +51,56 @@ namespace Application.Services
         public void DeleteUser(int id)
         {
             _arepo.DeleteUser(id);
+        }
+        public CategoryModel GetCatById(int id)
+        {
+            if (id == 0)
+            {
+                throw new NotImplementedException();
+            }
+            return _arepo.GetCatById(id);
+        }
+
+        public void UpdateCategory(CategoryModel catmod)
+        {
+            if (catmod == null)
+            {
+                throw new NotImplementedException();
+            }
+            _arepo.UpdateCategory(catmod);
+        }
+
+        public void DeleteCategory(int id)
+        {
+            if (id == 0)
+            {
+                throw new NotImplementedException();
+            }
+            _arepo.DeleteCategory(id);
+        }
+        public ProductModel GetProductById(int id)
+        {
+            if (id == 0)
+            {
+                throw new NotImplementedException();
+            }
+            return _arepo.GetProductById(id);
+        }
+        public void UpdateProduct(ProductModel product)
+        {
+            if (product == null)
+            {
+                throw new NotImplementedException();
+            }
+            _arepo.UpdateProduct(product);
+        }
+        public void DeleteProduct(int id)
+        {
+            if (id == 0)
+            {
+                throw new NotImplementedException();
+            }
+            _arepo.DeleteProduct(id);
         }
     }
 }
