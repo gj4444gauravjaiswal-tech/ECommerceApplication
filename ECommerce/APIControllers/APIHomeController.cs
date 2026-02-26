@@ -48,7 +48,7 @@ namespace ECommerce.APIControllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 claimsPrincipal);
 
-            return Ok(new { role = user.Role });
+            return Ok(new { role = user.Role , email = user.Email });
         }
         [HttpPost]
         public IActionResult Signin()

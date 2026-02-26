@@ -18,19 +18,19 @@
             </div>
             <form id="ModifyProd" method="post" enctype="multipart/form-data">
                 <!-- Modal Body -->
-                <div class="modal-body p-5" style="background-color: #fff5f5;">
+                <div class="modal-body px-5 py-1" style="background-color: #fff5f5;">
                     <label class="fw-bold mb-2">Product ID</label>
                     <input type="number" name="p_id" id="p_id" class="form-control shadow-sm mb-2" readonly />
                     <label class="fw-bold mb-2">Product Name</label>
-                    <input type="text" name="p_name" id="p_name" class="form-control shadow-sm mb-2" required placeholder="Enter Category Name" />
+                    <input type="text" name="p_name" id="p_name" class="form-control shadow-sm mb-2" required placeholder="Enter Product Name" />
                     <label class="fw-bold mb-2">Select Category</label>
-                    <select type="text" name="p_cat" id="p_cat" class="form-control shadow-sm mb-2" required placeholder="Enter Category Name" >
+                    <select type="text" name="p_cat" id="p_cat" class="form-control shadow-sm mb-2" required>
 
                     </select>
                     <label class="fw-bold mb-2">Product Description</label>
-                    <input type="text" name="p_desc" id="p_desc" class="form-control shadow-sm mb-2" required placeholder="Enter Category Name" />
+                    <input type="text" name="p_desc" id="p_desc" class="form-control shadow-sm mb-2" required placeholder="Enter Product Description" />
                     <label class="fw-bold mb-2">Product Price</label>
-                    <input type="text" name="p_price" id="p_price" class="form-control shadow-sm mb-2" required placeholder="Enter Category Name" />
+                    <input type="text" name="p_price" id="p_price" class="form-control shadow-sm mb-2" required placeholder="Enter Product Price" />
                     <label class="fw-bold mb-2">Product Image</label>
                     <br /><img class="mb-2" id="p_picture" height="40" width="80" />
                     <input type="file" name="p_pic" id="p_pic" class="form-control shadow-sm mb-3" required />
@@ -52,6 +52,8 @@
 <script>
     $(document).ready(function(){
         LoadProducts();
+        GetAllCats();
+        UpdateProduct();
     })
     function LoadProducts(){
         $.ajax({
@@ -63,8 +65,8 @@
                     var Product = "";
                     $.each(products,function(i,pro){
                         Product += `
-    <div class="col-sm-2 p-3">
-        <div class="card p-2 shadow-sm rounded-3" style="height:320px">
+    <div class="col-sm-2 p-1">
+        <div class="card p-2 shadow-sm rounded-3" style="height:340px">
             <img src="/images/${pro.p_Pic}" height="140px" width="100%" class="rounded-top-2" />
             <div class="card-body">
                 <div class="row mb-3">
@@ -137,23 +139,90 @@
         })
     }
     function EditProduct(p_id){
-        var id = p_id;
         $.ajax({
-            url:`/api/APIAdmin/GetProductById/${id}`,
+            url:`/api/APIAdmin/GetProductById/${p_id}`,
             type:'GET',
             success: function(result){
                 if(result != null){
 
+                    $("#p_id").val(result.p_Id);
+                    $("#p_name").val(result.p_Name);
+                    $("#p_cat").val(result.p_Cat);
+                    $("#p_desc").val(result.p_Desc);
+                    $("#p_price").val(result.p_Price);
+
+                    $("#p_picture").attr("src", "/images/" + result.p_Pic);
+                    $("#old_pic").val(result.p_Pic);
                 }
                 else{
-                    Swal.fire("Error!",'Unable to load product from server','error');
+                    Swal.fire("Error!",'Unable to load product','error');
+                }
+            },
+            error: function(){
+                Swal.fire("Error!",'Server Error','error');
+            }
+        })
+    }
+    function GetAllCats(){
+        $.ajax({
+            url:'/api/APIUser/GetAllCategory',
+            type:'GET',
+            success:function(result){
+                if (result && result.length > 0) {
+
+                    var opt = `<option value="" disabled selected>Select Category</option>`;
+
+                    $.each(result, function (i, row) {
+                        opt += `<option value="${row.c_ID}">${row.c_Name}</option>`;
+                    });
+
+                    $("#p_cat").html(opt);
                 }
             },
             error: function(err){
-                if(err){
-                    Swal.fire("Error!",'Server Error unable to load product from server','error');
+                if(err != null){
+                    Swal.fire('Error!','Server Error Unable to load category','error')
                 }
             }
         })
+    }
+    function UpdateProduct(){
+        $("#ModifyProd").submit(function(e){
+            e.preventDefault();
+
+            var formData = new FormData();
+
+            formData.append("P_Id", $("#p_id").val());
+            formData.append("P_Name", $("#p_name").val());
+            formData.append("P_Cat", $("#p_cat").val());
+            formData.append("P_Desc", $("#p_desc").val());
+            formData.append("P_Price", $("#p_price").val());
+            formData.append("old_pic", $("#old_pic").val());
+
+            var file = $("#p_pic")[0].files[0];
+            if(file){
+                formData.append("P_Pic", file);
+            }
+
+            $.ajax({
+                url:'/api/APIAdmin/UpdateProduct',
+                type:'PUT',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(res){
+                    if(res != null){
+                        Swal.fire('Success','Product updated successfully','success')
+                    .then(()=>{
+                        $("#myModal").modal("hide");
+                        LoadProducts();
+                    });
+                    }
+                },
+                error: function(){
+                    Swal.fire('Error!','Server Error!','error');
+                }
+            });
+        });
     }
 </script>

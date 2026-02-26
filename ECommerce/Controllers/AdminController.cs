@@ -40,6 +40,10 @@ namespace ECommerce.Controllers
         {
             return View();
         }
+        public IActionResult MyProfile()
+        {
+            return View();
+        }
         public IActionResult Setting()
         {
             return View();

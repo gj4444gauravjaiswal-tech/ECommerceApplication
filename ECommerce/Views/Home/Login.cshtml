@@ -140,12 +140,11 @@
                 contentType: 'application/json; charset=utf-8',
 
                 success: function (res) {
-
                     if (res != null) {
 
                         Swal.fire({
                             title: 'Login Successful!',
-                            text: 'Welcome ' + res.email,
+                            text: 'Welcome! ' + res.email,
                             icon: 'success',
                             confirmButtonText: 'Continue'
                         }).then((result) => {

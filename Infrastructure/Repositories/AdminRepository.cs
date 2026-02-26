@@ -286,7 +286,7 @@ namespace Infrastructure.Repositories
                     cmd.Parameters.AddWithValue("@p_desc", product.P_Desc);
                     cmd.Parameters.AddWithValue("@p_price", product.P_Price);
                     cmd.Parameters.AddWithValue("@p_image", product.P_Pic);
-                    cmd.Parameters.AddWithValue("@action", 6);
+                    cmd.Parameters.AddWithValue("@action", 3);
                     con.Open();
                     cmd.ExecuteNonQuery();
                 }

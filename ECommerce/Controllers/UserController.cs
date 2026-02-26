@@ -20,6 +20,10 @@ namespace ECommerce.Controllers
         {
             return View();
         }
+        public IActionResult MyProfile()
+        {
+            return View();
+        }
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

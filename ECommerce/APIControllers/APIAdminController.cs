@@ -169,29 +169,28 @@ namespace ECommerce.APIControllers
         [HttpPut("UpdateProduct")]
         public IActionResult UpdateProduct([FromForm] ProductModel product, [FromForm] IFormFile P_Pic, [FromForm] string old_pic)
         {
-            var existingProduct = _aservices.GetProductById(product.P_Id);
-            if (existingProduct == null)
-                return NotFound("Product not found");
-            existingProduct.P_Name = product.P_Name;
-            existingProduct.P_Desc = product.P_Desc;
-            existingProduct.P_Price = product.P_Price;
-            existingProduct.P_Cat = product.P_Cat;
+            // 🔹 Image handling
             if (P_Pic != null)
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(P_Pic.FileName);
                 var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     P_Pic.CopyTo(stream);
                 }
-                existingProduct.P_Pic = fileName;
+
+                product.P_Pic = fileName;   // ✅ new image
             }
             else
             {
-                existingProduct.P_Pic = old_pic;
+                product.P_Pic = old_pic;    // ✅ old image
             }
-            _aservices.UpdateProduct(existingProduct);
-            return Ok("Product Updated");
+
+            // 🔹 Direct Update
+            _aservices.UpdateProduct(product);
+
+            return Ok("Updated Successfully");
         }
         [HttpDelete("DeleteProduct/{id}")]
         public IActionResult DeleteProduct(int id)
